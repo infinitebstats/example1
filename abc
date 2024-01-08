@@ -1,0 +1,51 @@
+#########Overall
+
+survivalfunc<-defmacro(fitDFS, time,status,plotname,Ylab, expr=
+{
+  fitDFS <- surv_fit(Surv(time,status==1) ~ 1 ,data = data)
+ggsurvplot(fitDFS, data = data,
+           surv.median.line = "hv", # Add medians survival
+           legend="none",pval.coord= c(60,0.9),conf.int = FALSE,
+           pval = F,risk.table = TRUE,ylim = c(0,1),break.y.by = 0.20,
+           xlim=c(0,60), break.x.by = 12,tables.height = 0.25, ylab=Ylab,
+           xlab="Time in months",tables.theme = theme_test(),palette = "jco",
+           ggtheme = theme_classic2(base_size=12),
+           title = plotname)
+#return(summary(fitDFS)$table)
+#fitDFS <- prodlim(Hist(time,status)~1,data=data)
+#return(publish(fitDFS,times=c(48),org=TRUE))
+})
+
+jpeg(".jpg", width = 700, height = 550)
+survivalfunc(fit_OS,OS_months,OS_status,"Overall Survival","Cumulative survival")
+dev.off()
+
+jpeg(".jpg.jpg", width = 700, height = 550)
+survivalfunc(fit_LC,LC_months,LC_status,"Local control ","Cumulative Probability")
+dev.off()
+
+jpeg(".jpg", width = 700, height = 550)
+survivalfunc(fit_EFS,EFS_months,DFS_status,"Event free Survival","Event free Survival")
+dev.off()
+
+
+###############Survival plot (factors)
+
+survivalfunc<-defmacro(fitDFS, time, status, factor,factorname,llabs,plotname, expr=
+{
+  fitDFS <- surv_fit(Surv(time,status==1) ~ factor ,data = data)
+  fitDFS
+  surv_pvalue(fitDFS)
+  ggsurvplot(fitDFS,legend.title = factorname,legend.labs = llabs,pval = TRUE,
+             data = data, risk.table = TRUE,break.x.by = 12,tables.height = 0.25,xlab = "Time in months",
+             xlim=c(0,60),ylab=" Cumulative survival",
+             #Cumulative survival / Proportion without Locoregional relapse / "Disease free Survival"
+             tables.theme = theme_test(),palette = "jco",ggtheme = theme_classic2(base_size=12),
+             title = plotname)
+  #fitDFS <- prodlim(Hist(time,status)~factor,data=data)
+  #return(publish(fitDFS,times=c(48,60),org=TRUE))
+})
+
+pdf("S.05.01.2021.pdf")
+survivalfunc(fitOS_,OS_months,OS_status,,"",c(),"Overall survival for ")
+dev.off() 
